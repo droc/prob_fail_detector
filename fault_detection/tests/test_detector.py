@@ -1,11 +1,12 @@
 import unittest
 from fault_detection.binomial_detector import  BinomialDetector
+from test_case_reports.status import Status
 from fault_detection.tests.results_builder import  a_test_result_history
 
 
 class TestDetector(unittest.TestCase):
     def setUp(self):
-        self.detector = BinomialDetector(10, 0.1)
+        self.detector = BinomialDetector(10, 0.1, lambda x: x == Status.FAIL)
 
     def test_given_a_history_of_test_results_without_noise_where_the_test_began_to_fail_detects_fails(self):
         test_results = self.results().with_p_of_fail(1, since=10).build()

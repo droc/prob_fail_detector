@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 
 setup(
     name='fault_detection',
@@ -8,5 +8,6 @@ setup(
     license='',
     author='Juan',
     author_email='',
-    description='', requires=['gmpy']
+    description='',
+    install_requires=['gmpy']
 )
