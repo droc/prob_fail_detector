@@ -1,2 +1,2 @@
-prob_fail_detector
-==================
+Probabilistic fail detector
+===========================

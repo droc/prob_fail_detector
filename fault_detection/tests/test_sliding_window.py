@@ -1,7 +1,6 @@
 from __future__ import with_statement
 import unittest
-from test_case_reports.status import Status
-from fault_detection.binomial_detector import BinomialDetector
+from fault_detection.binomial_detector import BinomialDetector, Result
 from fault_detection.sliding_window import SlidingWindowDetection, FailureDetectedException
 from fault_detection.tests.results_builder import a_test_result_history
 
@@ -18,7 +17,41 @@ class TestSlidingWindow(unittest.TestCase):
             self.assertTrue(480 < exception.detected_at_element < 520)
 
     def a_detector(self):
-        return BinomialDetector(10, 0.1, lambda x: x == Status.FAIL)
+        return BinomialDetector(10, 0.1, lambda x: x == Result.FAIL)
 
     def a_stream_of_results(self, size):
         return a_test_result_history().with_number_of_results(size)
+
+    def test_does_nothing_if_frequency_didnt_increase(self):
+        sw = SlidingWindowDetection(self.a_detector(), window_size=20)
+        sw.detect_failure([Result.PASS, Result.PASS, Result.PASS, Result.PASS])
+
+    def test_raises_exception_if_frequency_increseas(self):
+        sw = SlidingWindowDetection(self.a_detector(), window_size=20)
+        try:
+            sw.detect_failure([
+                Result.PASS,
+                Result.PASS,
+                Result.FAIL,
+                Result.PASS,
+                Result.PASS,
+                Result.PASS,
+                Result.PASS,
+                Result.PASS,
+                Result.PASS,
+                Result.PASS,
+                Result.PASS,
+                Result.PASS,
+                Result.PASS,
+                Result.PASS,
+                Result.PASS,
+                Result.FAIL,
+                Result.FAIL,
+                Result.FAIL,
+                Result.FAIL,
+                Result.FAIL,
+                Result.FAIL,
+                Result.FAIL])
+            self.fail("Expected exception FailureDetectedException")
+        except FailureDetectedException:
+            pass
